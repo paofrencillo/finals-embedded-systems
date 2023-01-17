@@ -1,0 +1,146 @@
+.main {
+    background-color: #283D48;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.signin_wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 4rem;
+}
+
+.left_wrapper,
+.right_wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}
+
+.left_wrapper .header {
+    font-size: 40px;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+.left_wrapper .team {
+    font-size: 26px;
+    font-weight: 550;
+}
+
+.left_wrapper .description {
+    font-size: 20px;
+    margin-bottom: 3rem;
+}
+
+.left_wrapper .register_link_wrapper {
+    font-size: 18px;
+    display: flex;
+}
+
+.left_wrapper .register_link {
+    color: #A0E2F6;
+    text-decoration: none;
+}
+
+.left_wrapper .register_link:hover {
+    text-decoration: underline;
+}
+
+.left_wrapper .img_wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.right_wrapper .login_form {
+    background-color: #FFFFFF;
+    width: 400px;
+    border: 2px solid #848484;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 5px -5px 25px #0c1114,
+                -5px 5px 25px #253c48;
+}
+
+.login_form .login {
+    font-size: 26px;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 2.5rem;
+}
+
+.login_form .input_wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.input_wrapper input {
+    width: 300px;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid rgb(190, 190, 190);
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: 20px;
+    font-weight: 500;   
+}
+
+.input_wrapper input:focus {
+    outline: none !important;
+    border: 3px solid gray;
+    box-shadow: 0 0 5px #a0a0a0
+}
+
+.form_btns_wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.form_btns_wrapper .login_btn {
+    border: none;
+    background-color: #757575;
+    color: white;
+    font-size: 20px;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    width: 125px;
+    cursor: pointer;
+}
+
+.form_btns_wrapper .login_btn:hover {
+    background-color: #434343;
+}
+
+.form_btns_wrapper .signup_btn {
+    border: 2px solid #757575;
+    background-color: white;
+    color: #757575;
+    font-size: 20px;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    width: 125px;
+    cursor: pointer;
+}
+
+.form_btns_wrapper .signup_btn:hover {
+    background-color: #bebebe;
+    color: white;
+}
+
+.team_logo {
+    margin-top: 1rem;
+    color: #283D48;
+    font-size: 72px;
+    text-align: center;
+    font-weight: 800;
+}
