@@ -1,4 +1,4 @@
-import cv2, time, pandas, requests, base64, os
+import cv2, time, pandas, requests, base64
 from datetime import datetime
 
 # Assigning our static_back to None
@@ -102,14 +102,11 @@ while True:
             count += 1
 
             # Make a request
-            data = {"captured_on": str(time_now), "captured_image": str(base64img)}
+            data = {"captured_on": str(time_now), "captured_image": str(base64img), "file_path": file}
             res = requests.post('http://localhost:5000/post-motion', json=data)
 
             # Display the json response
             print(res.json())
-
-            # Remove the image from the directory (to free storage)
-            os.remove(f"frame{count}.jpg")
 
         except requests.exceptions.ConnectionError as e:
             print("Couldn't connect to the server!")

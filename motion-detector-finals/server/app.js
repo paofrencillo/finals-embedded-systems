@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql");
 const bodyParser = require("body-parser")
 const bcrypt = require('bcrypt');
+const fs = require('fs')
 const saltRounds = 10;
 const cors = require('cors')
 const sessions = require('express-session')
@@ -9,7 +10,7 @@ const { PythonShell } = require('python-shell')
 const app = express();
 const port = 5000;
 const persons_table = "persons";
-const captures_table = "captures"
+const captures_table = "captures";
 var session;
 
 // listen to port
@@ -30,10 +31,12 @@ connection.connect(function (err) {
 });
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ limit: '50mb',
+                                extended: true,
+                                parameterLimit:50000 }))
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '50mb' }))
 
 // use cors
 app.use(cors());
@@ -73,27 +76,26 @@ app.post('/post-login', async(req, res)=> {
   connection.query(`SELECT * FROM ${persons_table} WHERE username=?`,
   [username],
   (err, results)=> {
-    console.log(results)
-      try {
-          if ( results == [] ) {
-              res.json({message: "Username doesn't exists"});
-          } else {
-              bcrypt.compare(password, results[0].password, function(err, result) {
-                  if ( err ) throw err;
-                  if ( result == true ) {
-                    session = req.session;
-                    session.logged_in = true;
-                    session.username = username;
-                    console.log(`current session =  ${session.logged_in}`);   
-                    res.json({message: 'Success'});  
-                  } else {
-                      res.json({message: 'Wrong Password', comment: 'Wrong password'});
-                  }
-              })
-          }
-      } catch {
-          res.json({message: "Username doesn't exist.", comment: err});
-      }
+    try {
+        if ( results == [] ) {
+            res.json({message: "Username doesn't exists"});
+        } else {
+            bcrypt.compare(password, results[0].password, function(err, result) {
+                if ( err ) throw err;
+                if ( result == true ) {
+                  session = req.session;
+                  session.logged_in = true;
+                  session.username = username;
+                  console.log(session);   
+                  res.json({message: 'Success'});  
+                } else {
+                    res.json({message: 'Wrong Password', comment: 'Wrong password'});
+                }
+            })
+        }
+    } catch {
+        res.json({message: "Username doesn't exist.", comment: err});
+    }
   });
 });
 
@@ -102,7 +104,6 @@ app.post('/post-resetpass', async(req, res)=> {
   const username = session.username;
   const old_password = req.body.old_password;
   const new_password = req.body.new_password;
-  console.log(new_password)
   
   connection.query(`SELECT * FROM ${persons_table} WHERE username=?`,
   [username],
@@ -142,7 +143,7 @@ app.post('/post-resetpass', async(req, res)=> {
 // Save datetime and image to database
 app.post('/post-motion', (req, res)=> {
   // get the request json
-  var { captured_on, captured_image } = req.body;
+  let { captured_on, captured_image, file_path } = req.body;
 
   // save datetime, imgfile, into the db
   connection.query(`INSERT INTO ${captures_table} (captured_on, captured_image) VALUES (?, ?);`,
@@ -150,6 +151,8 @@ app.post('/post-motion', (req, res)=> {
   (err, result)=> {
     try {
       if (result.affectedRows > 0) {
+        // Remove image file from the system to free some space
+        fs.unlinkSync(file_path)
         res.json({ data: "Success" });
       } else {
         res.json({ message: "Something went wrong." });
@@ -169,7 +172,6 @@ app.get('/', (req, res)=> {
 });
 
 app.get('/signup', (req, res)=> {
-  console.log(session)
   if ( session == undefined ) {
     res.json({is_logged_in: false});
   } else if ( session != undefined ) {
@@ -193,63 +195,48 @@ app.get('/resetpass', (req, res)=> {
   }
 });
 
-app.get('/motion', (req, res)=> {
-  if ( session == undefined ) {
-    res.json({is_logged_in: false});
-  } else if ( session != undefined ) {
-    // Select the last entry from the db
-    let array = [];
-    connection.query(`SELECT * FROM ${db_table} ORDER BY id DESC LIMIT 10;`,
-    (err, results)=> {
-        try {
-          if (results.length > 0) {
-            for ( i=0; i<results.length; i++ ) {
-              array.unshift(results[i])
-            }
-            // send a json response containg the image data (blob)
-            res.json({'imgData': array});
-        } else {
-          res.json({ message: "Something went wrong." });
-        }
-        } catch {
-            res.json({ message: err });
-        }
-    })
-  }
-});
-
 app.get('/logout', (req, res)=> {
   session = undefined;
   res.redirect('http://localhost:3000');
 });
 
-// Fetch data
+// Display captured images and run capture.py
 app.get('/motion', (req, res)=> {
-  let pyshell = new PythonShell('../camera/app.py')
-  pyshell.kill()
+  console.log(session)
+  if ( session == undefined ) {
+    res.json({is_logged_in: false});
+  }
+  else if ( session != undefined ) {
+    let pyshell = new PythonShell('capture.py')
+    pyshell.kill()
 
-  PythonShell.run('../camera/app.py', null, function (err) {
-    if (err) {
-      throw err
-    }
-    console.log('Motion Detector Terminated');
-  });
-  // Select the last entry from the db
-  let array = [];
-  connection.query(`SELECT * FROM ${db_table} ORDER BY id DESC LIMIT 10;`,
-  (err, results)=> {
-      try {
+    PythonShell.run('capture.py', null, function (err) {
+      if (err) {
+        throw err
+      }
+      console.log('Motion Detector Terminated');
+    });
+
+    // Select the last entry from the db
+    let array = [];
+    connection.query(`SELECT * FROM ${captures_table} ORDER BY id DESC LIMIT 10;`,
+    (err, results)=> {
+      console.log(results)
+        try {
           if (results.length > 0) {
             for ( i=0; i<results.length; i++ ) {
               array.unshift(results[i])
             }
+
             // send a json response containg the image data (blob)
-            res.json({'imgData': array});
-      } else {
-        res.json(null);
-      }
-      } catch {
-          res.json({ message: err });
-      }
-  });
+            res.json({'imgData': array,
+                        is_logged_in: true});
+        } else {
+          res.json({ message: "Something wen't wrong" });
+        }
+        } catch {
+            res.json({ message: err });
+        }
+    });
+  }
 });

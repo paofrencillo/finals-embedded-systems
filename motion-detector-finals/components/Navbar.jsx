@@ -10,10 +10,10 @@ export default function Navbar() {
             </Link>
             <div>
                 <ul className={styles.navbar_options_wrapper}>
-                    <Link className={styles.navbar_links} href="#">
+                    <Link className={styles.navbar_links} href="http://localhost:3000/motion">
                         <li className={styles.navbar_options}>Motion Detector</li>
                     </Link>
-                    <Link className={styles.navbar_links} href="/resetpass">
+                    <Link className={styles.navbar_links} href="http://localhost:3000/resetpass">
                         <li className={styles.navbar_options}>Reset Password</li>
                     </Link>
                     <Link className={styles.navbar_links} href="http://localhost:5000/logout">

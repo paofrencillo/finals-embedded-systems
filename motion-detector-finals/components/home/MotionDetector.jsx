@@ -25,7 +25,7 @@ export default function MotionDetector() {
                 </h1>
                 <div className={styles.md_section}>
                     <img src="/motion.gif" alt="motion.gif" />
-                    <Link href={'/showimgs'}>
+                    <Link href={'http://localhost:3000/motion'}>
                         <button className={styles.button}>
                             Check this out!
                         </button>
