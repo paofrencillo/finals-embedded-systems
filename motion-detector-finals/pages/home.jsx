@@ -20,3 +20,24 @@ export default function Home() {
         </div>
     );
 }
+
+export async function getStaticProps() {
+  // Fetch data from the server
+  const res = await fetch('http://localhost:5000/home');
+
+  // Get the json response
+  const data = await res.json();
+  
+  // If user was not logged in, go to login page
+  if ( data.is_logged_in == false ) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+  // If user was logged in, redirect to this current page
+  return { props: {} }
+}

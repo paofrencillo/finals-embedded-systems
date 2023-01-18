@@ -1,11 +1,10 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import styles from '../styles/Index.module.css'
-import { useEffect } from 'react';
+import styles from '../styles/Index.module.css';
 
 
-export default function Index({ data }) {
+export default function Index() {
   // Handles the submit event on form submit.
   const login = async (event) => {
 
@@ -18,12 +17,12 @@ export default function Index({ data }) {
 
     if ( password == null || password == '' ) {
       alert("Enter your password.");
-      return false
+      return
     }
 
     if ( username == null || username == '' ) {
       alert("Enter your username.");
-      return false
+      return
     }
 
     // Get data from the form.
@@ -36,7 +35,7 @@ export default function Index({ data }) {
     const JSONdata = JSON.stringify(data)
 
     // API endpoint where we send form data.
-    const endpoint = 'http://localhost:4000/post-login'
+    const endpoint = 'http://localhost:5000/post-login'
 
     // Form the request for sending data to the server.
     const options = {
@@ -64,12 +63,7 @@ export default function Index({ data }) {
       alert(result.message)
     }
 } 
-  useEffect(()=> {
-    if ( data.redirect_home == 'yes' ) {
-      window.location.replace("http://localhost:3000/home")
-      return
-    } 
-  })
+
  return (
     <div>
       <Head>
@@ -122,13 +116,23 @@ export default function Index({ data }) {
   )
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   // Fetch data from the server
-  const res = await fetch('http://localhost:4000');
+  const res = await fetch('http://localhost:5000');
 
   // Get the json response
   const data = await res.json();
-  console.log(data)
-
-  return { props: { data } }
+  
+  // If user was not logged in, redirect to home page
+  if ( data.is_logged_in == true ) {
+    return {
+      redirect: {
+        destination: "/home",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+  // If user was logged in, redirect to this current page
+  return { props: {} }
 }

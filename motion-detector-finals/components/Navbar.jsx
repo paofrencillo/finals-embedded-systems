@@ -16,7 +16,7 @@ export default function Navbar() {
                     <Link className={styles.navbar_links} href="/resetpass">
                         <li className={styles.navbar_options}>Reset Password</li>
                     </Link>
-                    <Link className={styles.navbar_links} href="#">
+                    <Link className={styles.navbar_links} href="http://localhost:5000/logout">
                         <li className={styles.navbar_options}>Logout</li>
                     </Link>     
                 </ul>

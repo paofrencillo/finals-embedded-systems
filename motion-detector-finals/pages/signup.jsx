@@ -18,16 +18,16 @@ export default function Signup() {
 
     if ( password == null || password == '' ) {
       alert("Enter your desired password.");
-      return false
+      return
     }
 
     if ( password != confirm_password ) {
       alert("Password don't match!");
-      return false
+      return
     }
     if ( username == null || username == '' ) {
       alert("Enter your desired username.");
-      return false
+      return
     }
 
     // Get data from the form.
@@ -40,7 +40,7 @@ export default function Signup() {
     const JSONdata = JSON.stringify(data)
 
     // API endpoint where we send form data.
-    const endpoint = 'http://192.168.0.110:4000/post-register'
+    const endpoint = 'http://localhost:5000/post-register'
 
     // Form the request for sending data to the server.
     const options = {
@@ -64,10 +64,10 @@ export default function Signup() {
     if ( result.error_code == 'ER_DUP_ENTRY' ) {
       alert(result.message)
     } else {
-      alert(`Registration successfull for username ${result.username}. You will be redirected to login page.`)
+      alert(`Registration successful for username ${result.username}. You will be redirected to login page.`)
       window.location.replace("http://localhost:3000")
     }
-}
+  }
 
   return (
     <div>
@@ -117,4 +117,25 @@ export default function Signup() {
       </main>
     </div>
   )
+}
+
+export async function getStaticProps() {
+  // Fetch data from the server
+  const res = await fetch('http://localhost:5000/signup');
+
+  // Get the json response
+  const data = await res.json();
+  
+  // If user was not logged in, go to login page
+  if ( data.is_logged_in == true ) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+  // If user was logged in, redirect to this current page
+  return { props: {} }
 }
