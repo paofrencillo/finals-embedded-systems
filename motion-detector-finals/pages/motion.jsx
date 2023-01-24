@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar';
 
 export default function Motion({ data }) {
     // Render into HTML
-    if ( data == null ) {
+    if ( data.message ) {
         return (
             <div className={styles.main}>
                 <Head>
@@ -19,7 +19,6 @@ export default function Motion({ data }) {
                     <h1>NO IMAGE DETECTED.</h1>
                     <h1>LET THE PYTHON SCRIPT TO RUN AND REFRESH THE PAGE.</h1>
                 </div>
-                <Footer />
             </div>
         )
     }
