@@ -42,19 +42,22 @@ export default function Motion({ data }) {
 
                 // Configure the image tag attribute (src)
                 let imgSrc = "data:image/png;base64," + base64Image;
+                 
+                // Get the image number
+                let img_num = imgData['id'];
                 
                 // Get the date time
                 let captured_on = imgData['captured_on'];
                 
                 return (
                     <div>
-                        <p>{10 - index}. Captured On: {captured_on}</p>
-                        <Image src={imgSrc} alt="captured image" width={500} height={400} />
+                        <p>{ 10 - index }. Image #{ img_num } | Captured On: { captured_on }</p>
+                        <Image src={ imgSrc } alt="captured image" width={500} height={400} />
                     </div>    
                 )
-            })}
+            }).reverse()}
             </div> 
-        </div>     
+        </div>
     ) 
 }
 

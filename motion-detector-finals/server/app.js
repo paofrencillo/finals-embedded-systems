@@ -202,7 +202,6 @@ app.get('/logout', (req, res)=> {
 
 // Display captured images and run capture.py
 app.get('/motion', (req, res)=> {
-  console.log(session)
   if ( session == undefined ) {
     res.json({is_logged_in: false});
   }
